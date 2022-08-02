@@ -44,8 +44,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: ${{ github.event.inputs.java_distribution }}
-          java-version: ${{ github.event.inputs.java_version }}
+          distribution: ${{ inputs.java_distribution }}
+          java-version: ${{ inputs.java_version }}
 
       - name: Cache local Maven repository
         uses: actions/cache@v2
@@ -117,8 +117,8 @@ jobs:
         env:
           ECR_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.PACKAGE_NAME }}:${{ env.GIT_REF }}-${{ env.SHORT_SHA }}
         run: |
-          cd infrastructure/kubernetes/${{ github.event.inputs.environment }}
-          sed -i "s|image:.*|image: $ECR_IMAGE|" ${{ github.event.inputs.service_name }}.yaml
+          cd infrastructure/kubernetes/${{ inputs.environment }}
+          sed -i "s|image:.*|image: $ECR_IMAGE|" ${{ inputs.service_name }}.yaml
       
       - name: Commit files
         run: |
