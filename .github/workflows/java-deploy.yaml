@@ -3,6 +3,10 @@ name: PR - Deploy
 on:
   workflow_call:
     inputs:
+      environment:
+        type: string
+        required: true
+        default: development
       service_name:
         type: string
         required: true
@@ -109,30 +113,13 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       
-      - name: Kubernetes resource setup Development
-        if: github.event_name != 'workflow_dispatch'
+      - name: Kubernetes resource setup
         env:
           ECR_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.PACKAGE_NAME }}:${{ env.GIT_REF }}-${{ env.SHORT_SHA }}
         run: |
-          cd infrastructure/kubernetes/development
+          cd infrastructure/kubernetes/${{ github.event.inputs.environment }}
           sed -i "s|image:.*|image: $ECR_IMAGE|" ${{ github.event.inputs.service_name }}.yaml
       
-      - name: Kubernetes resource setup RC
-        if: github.event.inputs.force_rc_deploy == 'true'
-        env:
-          ECR_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.PACKAGE_NAME }}:${{ env.GIT_REF }}-${{ env.SHORT_SHA }}
-        run: |
-          cd infrastructure/kubernetes/rc
-          sed -i "s|image:.*|image: $ECR_IMAGE|" ${{ github.event.inputs.service_name }}.yaml
-      
-      - name: Kubernetes resource setup Production
-        if: github.event.inputs.force_prod_deploy == 'true'
-        env:
-          ECR_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.PACKAGE_NAME }}:${{ env.GIT_REF }}-${{ env.SHORT_SHA }}
-        run: |
-          cd infrastructure/kubernetes/production
-          sed -i "s|image:.*|image: $ECR_IMAGE|" ${{ github.event.inputs.service_name }}.yaml
-                   
       - name: Commit files
         run: |
           git config --local user.email "action@github.com"
