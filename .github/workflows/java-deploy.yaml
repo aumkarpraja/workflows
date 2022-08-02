@@ -20,13 +20,10 @@ on:
         default: false
     secrets:
       PACKAGE_NAME:
-        type: string
         required: true
       AWS_ACCESS_KEY_DEVELOPMENT:
-        type: string
         required: true
       AWS_SECRET_ACCESS_KEY_DEVELOPMENT:
-        type: string
         required: true      
       
 jobs:
