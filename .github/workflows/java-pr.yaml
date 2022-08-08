@@ -42,8 +42,3 @@ jobs:
       - name: Unit Test
         run: |
           ${{ env.MVN_DEFAULT }} test --fail-at-end
-
-
-
-
-      
