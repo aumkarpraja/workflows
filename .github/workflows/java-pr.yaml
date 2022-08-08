@@ -11,7 +11,7 @@ on:
         required: true
       
 jobs:
-  deploy:
+  pr:
     runs-on: ubuntu-latest
     env:
       MVN_DEFAULT: mvn --settings settings.xml --projects . --also-make
