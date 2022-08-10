@@ -1,0 +1,22 @@
+name: Docker - Deploy
+
+on:
+  workflow_call: {}
+
+  build:
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Build
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: false
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
