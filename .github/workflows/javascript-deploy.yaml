@@ -6,7 +6,13 @@ on:
       working_directory:
         type: string
         required: true
+      s3_bucket:
+        type: string
+        required: true
       s3_bucket_region:
+        type: string
+        required: true
+      cf_dist_id:
         type: string
         required: true
     secrets:
@@ -14,8 +20,6 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true    
-      S3_BUCKET:
-        required: true
 
 jobs:
   build-deploy:
@@ -63,9 +67,9 @@ jobs:
         uses: reggionick/s3-deploy@v3
         with:
           folder: build
-          bucket: ${{ secrets.S3_BUCKET }}
+          bucket: ${{ inputs.s3_bucket }}
           bucket-region: ${{ inputs.s3_bucket_region }}
-          dist-id: ${{ secrets.CF_DIST_ID }}
+          dist-id: ${{ inputs.cf_dist_id }}
           invalidation: /*
           delete-removed: true
           no-cache: false
