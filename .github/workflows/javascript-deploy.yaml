@@ -32,7 +32,7 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: |
-          cd ${{ env.PACKAGE_NAME }}
+          cd ${{ inputs.working_directory }}
           echo "::set-output name=dir::$(yarn cache dir)"
       
       - uses: actions/cache@v2
@@ -60,7 +60,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ca-central-1
+          aws-region: ${{ inputs.s3_bucket_region }}
 
       - name: Deploy
         working-directory: ${{ inputs.working_directory }}
