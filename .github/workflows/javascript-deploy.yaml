@@ -1,4 +1,4 @@
-name: Deploy - Container
+name: JavaScript - Deploy
 
 on:
   workflow_call:
