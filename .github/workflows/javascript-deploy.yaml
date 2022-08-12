@@ -15,6 +15,9 @@ on:
       cf_dist_id:
         type: string
         required: true
+      folder:
+        type: string
+        required: false
     secrets:
       AWS_ACCESS_KEY:
         required: true
@@ -63,10 +66,9 @@ jobs:
           aws-region: ${{ inputs.s3_bucket_region }}
 
       - name: Deploy
-        working-directory: ${{ inputs.working_directory }}
         uses: reggionick/s3-deploy@v3
         with:
-          folder: build
+          folder: ${{ inputs.folder }}
           bucket: ${{ inputs.s3_bucket }}
           bucket-region: ${{ inputs.s3_bucket_region }}
           dist-id: ${{ inputs.cf_dist_id }}
