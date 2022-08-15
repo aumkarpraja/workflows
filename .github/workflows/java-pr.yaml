@@ -1,8 +1,12 @@
-name: PR - Test
+name: Java - PR
 
 on:
   workflow_call:
     inputs:
+      path:
+        type: string
+        required: false
+        default: "."
       java_distribution:
         type: string
         required: true
@@ -14,7 +18,7 @@ jobs:
   pr:
     runs-on: ubuntu-latest
     env:
-      MVN_DEFAULT: mvn --settings settings.xml --projects . --also-make
+      MVN_DEFAULT: mvn --settings settings.xml --projects ${{ inputs.path }} --also-make
       DOCKER_CLI_EXPERIMENTAL: enabled
 
     steps:
