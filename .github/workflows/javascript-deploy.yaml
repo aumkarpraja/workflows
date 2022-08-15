@@ -65,13 +65,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.s3_bucket_region }}
 
-      - name: Deploy
-        uses: reggionick/s3-deploy@v3
-        with:
-          folder: ${{ inputs.folder }}
-          bucket: ${{ inputs.s3_bucket }}
-          bucket-region: ${{ inputs.s3_bucket_region }}
-          dist-id: ${{ inputs.cf_dist_id }}
-          invalidation: /*
-          delete-removed: true
-          no-cache: false
+      - name: Deploy container to bucket
+        run: aws s3 sync ${{ inputs.folder }}
+        
+      - name: Invalidate dashboard cloudfront
+        run: aws cloudfront create-invalidation --distribution-id ${{ inputs.cf_dist_id }} --paths /*
