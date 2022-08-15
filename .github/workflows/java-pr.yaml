@@ -18,7 +18,7 @@ jobs:
   pr:
     runs-on: ubuntu-latest
     env:
-      MVN_DEFAULT: mvn --settings settings.xml --projects . --also-make
+      MVN_DEFAULT: mvn --settings settings.xml --projects ${{ inputs.path }} --also-make
       DOCKER_CLI_EXPERIMENTAL: enabled
 
     steps:
@@ -40,11 +40,9 @@ jobs:
             ${{ runner.os }}-maven-
           
       - name: Code Style
-        working-directory: ${{ inputs.path }}
         run: |
           ${{ env.MVN_DEFAULT }} clean compile -U
       
       - name: Unit Test
-        working-directory: ${{ inputs.path }}
         run: |
           ${{ env.MVN_DEFAULT }} test --fail-at-end
