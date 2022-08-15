@@ -15,6 +15,9 @@ on:
       cf_dist_id:
         type: string
         required: true
+      folder:
+        type: string
+        required: false
     secrets:
       AWS_ACCESS_KEY:
         required: true
@@ -62,14 +65,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.s3_bucket_region }}
 
-      - name: Deploy
-        working-directory: ${{ inputs.working_directory }}
-        uses: reggionick/s3-deploy@v3
-        with:
-          folder: build
-          bucket: ${{ inputs.s3_bucket }}
-          bucket-region: ${{ inputs.s3_bucket_region }}
-          dist-id: ${{ inputs.cf_dist_id }}
-          invalidation: /*
-          delete-removed: true
-          no-cache: false
+      - name: Deploy container to bucket
+        run: aws s3 sync ${{ inputs.folder }} s3://${{ inputs.s3_bucket }}
+        
+      - name: Invalidate dashboard cloudfront
+        run: aws cloudfront create-invalidation --distribution-id ${{ inputs.cf_dist_id }} --paths /*
