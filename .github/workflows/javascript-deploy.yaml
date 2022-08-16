@@ -18,6 +18,9 @@ on:
       folder:
         type: string
         required: false
+      build_env:
+        type: string
+        required: false
     secrets:
       AWS_ACCESS_KEY:
         required: true
@@ -54,6 +57,8 @@ jobs:
          
       - name: Build
         working-directory: ${{ inputs.working_directory }}
+        env: 
+          BUILD_ENV: ${{ inputs.build_env }}
         shell: bash
         run: |
           yarn build
