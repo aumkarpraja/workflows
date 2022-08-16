@@ -6,7 +6,7 @@ on:
       environment:
         type: string
         required: true
-      service_name:
+      service:
         type: string
         required: true
         description: Name of the service in Kubernetes (i.e sso)
@@ -30,7 +30,7 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     env:
-      MVN_DEFAULT: mvn --settings settings.xml --projects . --also-make
+      MVN_DEFAULT: mvn --settings settings.xml --projects ${{ inputs.service }} --also-make
       DOCKER_CLI_EXPERIMENTAL: enabled
 
     steps:
@@ -114,7 +114,7 @@ jobs:
           ECR_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.package_name }}:${{ env.GIT_REF }}-${{ env.SHORT_SHA }}
         run: |
           cd infrastructure/kubernetes/${{ inputs.environment }}
-          sed -i "s|image:.*|image: $ECR_IMAGE|" ${{ inputs.service_name }}.yaml
+          sed -i "s|image:.*|image: $ECR_IMAGE|" ${{ inputs.service }}.yaml
       
       - name: Commit files
         run: |
