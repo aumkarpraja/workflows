@@ -5,33 +5,19 @@ on:
     inputs:
       service_name:
         description: 'Name of the service'
-        type: string
         required: true
       java_distribution:
         description: 'Distribution of Java to use'
-        type: string
         required: true
       java_version:
         description: 'Version of Java to use'
-        type: string
         required: true
-      force_rc_deploy:
-        description: 'Deploy to RC' 
-        type: boolean
-        default: false
-      force_prod_deploy:
-        description: 'Deploy to Prod' 
-        type: boolean
-        default: false
     secrets:
       PACKAGE_NAME: 
-        type: string
         required: true
       AWS_ACCESS_KEY_DEVELOPMENT:
-        type: string
         required: true
       AWS_SECRET_ACCESS_KEY_DEVELOPMENT:
-        type: string
         required: true      
       
 jobs:

@@ -60,7 +60,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /home/runner/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ inputs.java_version}}-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
           
