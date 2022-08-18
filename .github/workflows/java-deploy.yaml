@@ -53,7 +53,7 @@ jobs:
         if: inputs.java_version == '10'
         uses: oracle-actions/setup-java@v1
         with:
-          website: oracle.com
+          website: jdk.java.net
           release: 10
 
       - name: Cache local Maven repository
