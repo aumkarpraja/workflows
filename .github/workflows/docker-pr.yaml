@@ -2,6 +2,15 @@ name: Docker - PR
 
 on:
   workflow_call:
+    inputs:
+      service:
+        type: string
+        default: ''
+        required: false
+      service_path:
+        type: string
+        default: '.'
+        required: false
 
 jobs:
   build:
@@ -21,16 +30,16 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-${{ inputs.service }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build
+            ${{ runner.os }}-${{ inputs.service }}-buildx-
+      
+      - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: ./
-          file: ./Dockerfile
+          context: ./${{ inputs.service_path }}
+          file: ./${{ inputs.service_path }}/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: false
           cache-from: type=local,src=/tmp/.buildx-cache

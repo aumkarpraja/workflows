@@ -6,19 +6,24 @@ on:
       environment:
         type: string
         required: true
-      service_name:
+      service:
+        type: string
+        required: true
+      service_path:
+        type: string
+        default: '.'
+        required: true
+      namespace:
         type: string
         required: true
     secrets:
-      PACKAGE_NAME:
-        required: true
       AWS_ACCESS_KEY_DEVELOPMENT:
         required: true
       AWS_SECRET_ACCESS_KEY_DEVELOPMENT:
         required: true      
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-latest
     env:
       DOCKER_CLI_EXPERIMENTAL: enabled
@@ -30,9 +35,9 @@ jobs:
       - name: Configure ECR AWS credentials (dev)
         uses: aws-actions/configure-aws-credentials@v1
         with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_DEVELOPMENT }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEVELOPMENT }}
-            aws-region: ca-central-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_DEVELOPMENT }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEVELOPMENT }}
+          aws-region: ca-central-1
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -46,22 +51,24 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-${{ inputs.service }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            ${{ runner.os }}-${{ inputs.service }}-buildx-
+      
       - name: Generate env vars
         run: |
           echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
           echo "GIT_REF=`echo ${GITHUB_REF##*/}`" >> $GITHUB_ENV
+      
       - name: Build and push
         id: docker_build
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.PACKAGE_NAME }}
+          ECR_REPOSITORY: ${{ inputs.namespace }}/${{ inputs.service }}
         uses: docker/build-push-action@v2
         with:
-          context: ./
-          file: ./Dockerfile
+          context: ./${{ inputs.service_path }}
+          file: ./${{ inputs.service_path }}/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.GIT_REF }}-${{ env.SHORT_SHA }}
@@ -70,10 +77,10 @@ jobs:
 
       - name: Kubernetes resource setup
         env:
-          ECR_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.PACKAGE_NAME }}:${{ env.GIT_REF }}-${{ env.SHORT_SHA }}
+          ECR_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.namespace }}/${{ inputs.service }}:${{ env.GIT_REF }}-${{ env.SHORT_SHA }}
         run: |
-          cd infrastructure/kubernetes/${{ inputs.environment }}
-          sed -i "s|image:.*|image: $ECR_IMAGE|" ${{ inputs.service_name }}.yaml
+          cd ${{ inputs.service_path }}/infrastructure/kubernetes/${{ inputs.environment }}
+          sed -i "s|image:.*|image: $ECR_IMAGE|" ${{ inputs.service }}.yaml
           
       - name: Commit files
         run: |
