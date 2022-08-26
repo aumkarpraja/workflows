@@ -5,7 +5,8 @@ on:
     inputs:
       working_directory:
         type: string
-        required: true
+        default: '.'
+        required: false
 
 jobs:
   pr:
