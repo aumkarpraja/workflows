@@ -5,14 +5,16 @@ on:
     inputs:
       environment:
         type: string
+        default: 'development'
         required: true
       service:
         type: string
-        required: true
+        default: '.'
+        required: false
       service_path:
         type: string
         default: '.'
-        required: true
+        required: false
       namespace:
         type: string
         required: true

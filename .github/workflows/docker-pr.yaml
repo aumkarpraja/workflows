@@ -5,7 +5,7 @@ on:
     inputs:
       service:
         type: string
-        default: ''
+        default: '.'
         required: false
       service_path:
         type: string

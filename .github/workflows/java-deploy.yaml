@@ -5,6 +5,7 @@ on:
     inputs:
       environment:
         type: string
+        default: 'development'
         required: true
       service_path:
         type: string
